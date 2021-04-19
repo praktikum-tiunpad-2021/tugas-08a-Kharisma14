@@ -9,7 +9,8 @@ namespace priority_queue {
  */
 template <typename T>
 struct Element {
-  // Implementasikan di sini.
+  T data, priority;
+  Element *next;
 };
 
 template <typename T>
@@ -20,7 +21,8 @@ using ElementPtr = Element<T> *;
  */
 template <typename T>
 struct Queue {
-  // Implementasikan di sini.
+  ElementPtr<T> head;
+  ElementPtr<T> tail;
 };
 
 /**
@@ -30,7 +32,10 @@ struct Queue {
  */
 template <typename T>
 Queue<T> new_queue() {
-  // Implementasikan di sini.
+  Queue<T> q;
+  q.head = nullptr;
+  q.tail = nullptr;
+  return q;
 }
 
 /**
@@ -42,7 +47,42 @@ Queue<T> new_queue() {
  */
 template <typename T>
 void enqueue(Queue<T> &q, const T &value, int priority) {
-  // Implementasikan di sini.
+  //membuat elemen baru
+  ElementPtr<T> pBaru = new Element<T>;
+  pBaru->data = value;
+  pBaru->priority = priority;
+  pBaru->next = nullptr;
+  //keadaan saat queue kosong
+  if(q.head==nullptr && q.tail==nullptr){
+    q.head = pBaru;
+    q.tail = pBaru;
+  }
+  //keadaan saat queue ada isi
+  else{
+    ElementPtr<T> pHelp = q.head;
+    ElementPtr<T> pRev = nullptr;
+    while(pBaru->priority <= pHelp->priority){
+      if(pHelp->next==nullptr)
+        break;
+      pRev = pHelp;
+      pHelp = pHelp->next;
+    }
+    //insert first
+    if(pHelp==q.head && pBaru->priority > pHelp->priority){
+      pBaru->next = pHelp;
+      q.head = pBaru;
+    }
+    //insert last
+    else if(pHelp == q.head && pBaru->priority < pHelp->priority){
+      pHelp->next = pBaru;
+      q.tail = pBaru;
+    }
+    //insert di tengah
+    else{
+      pRev->next = pBaru;
+      pBaru->next = pHelp;
+    }
+  }
 }
 
 /**
@@ -53,7 +93,7 @@ void enqueue(Queue<T> &q, const T &value, int priority) {
  */
 template <typename T>
 T top(const Queue<T> &q) {
-  // Implementasikan di sini.
+  return q.head->data;
 }
 
 /**
@@ -63,7 +103,23 @@ T top(const Queue<T> &q) {
  */
 template <typename T>
 void dequeue(Queue<T> &q) {
-  // Implementasikan di sini.
+  ElementPtr<T> pHapus;
+  //keadaan saat queue kosong
+  if(q.head == nullptr && q.tail == nullptr){
+    pHapus = nullptr;
+  }
+  //keadaan saat queue hanya ada 1 elemen
+  else if(q.head->next==nullptr){
+    pHapus = q.head;
+    q.head = nullptr;
+    q.tail = nullptr;
+  }
+  //keadaan saat queue memiliki elemen >1
+  else{
+    pHapus = q.head;
+    q.head = q.head->next;
+    pHapus->next = nullptr;
+  }
 }
 
 }  // namespace priority_queue
